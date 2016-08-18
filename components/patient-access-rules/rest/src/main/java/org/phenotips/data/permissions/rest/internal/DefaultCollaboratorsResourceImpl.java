@@ -189,7 +189,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
         }
 
         @Override
-        public String getType()
+        public String getCollaboratorType()
         {
             return "";
         }
