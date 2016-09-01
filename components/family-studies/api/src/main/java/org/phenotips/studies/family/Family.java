@@ -100,6 +100,11 @@ public interface Family
     String getExternalId();
 
     /**
+     * @return family proband id. Returns "" if id is not defined.
+     */
+    String getProbandId();
+
+    /**
      * @param action to get URL for
      * @return URL
      */

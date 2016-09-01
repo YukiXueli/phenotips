@@ -457,4 +457,11 @@ public class PhenotipsFamily implements Family
         }
         return true;
     }
+
+    @Override
+    public String getProbandId()
+    {
+        // TODO implement method
+        return "proband_id";
+    }
 }
