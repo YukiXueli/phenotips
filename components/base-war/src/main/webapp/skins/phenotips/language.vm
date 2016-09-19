@@ -1,0 +1,78 @@
+##################################
+##        LANGUAGE MENU
+##################################
+#if ($displayLanguageChoice && $xwiki.isMultiLingual())
+  #set ($obj = $doc.getObject('XWiki.XWikiPreferences'))
+  #set ($defaultLanguage = $doc.getValue('default_language', $obj))
+  #set ($wikiSettingsLanguages = $!xwiki.getXWikiPreference('languages').trim().split('\s*[,| ]\s*'))
+  #set ($hasLanguagesSet = $wikiSettingsLanguages.size() > 1 || "$!wikiSettingsLanguages.get(0)" != '')
+  #set ($allangs = [])
+  #set ($discard = $allangs.add($defaultLanguage))
+  #if ($wikiSettingsLanguages.size() > 1)
+    #set ($i = 0)
+    #foreach($lang in $wikiSettingsLanguages)
+      #if ("$wikiSettingsLanguages.get(i)" != $defaultLanguage)
+        #set ($discard = $allangs.add($wikiSettingsLanguages.get(i)))
+        #set ($i = $i + 1)
+      #end
+    #end
+  #else
+    #if ("$!wikiSettingsLanguages.get(0)" != '' && "$wikiSettingsLanguages.get(0)" != $defaultLanguage)
+      #set ($discard = $allangs.add($wikiSettingsLanguages.get(0)))
+    #end
+  #end
+  ## Get the query string as a map to preserve the values except the language (see: http://jira.xwiki.org/browse/XWIKI-11314)
+  #set($queryStringMap = {})
+  #set($discard = $queryStringMap.putAll($request.parameterMap))
+  #drawerTopItemStart($services.localization.render('languages'), 'tmLanguages')
+  #foreach($lang in $allangs)
+  #set($discard = $queryStringMap.put('language', $lang))
+    #drawerItem($!doc.getURL('view', $escapetool.url($queryStringMap)), $lang, "#displayLanguagePrettyName($lang)")
+  #end
+  #drawerTopItemStop()
+#end
+##########################################
+## Display the pretty name of a language
+##########################################
+#macro(displayLanguagePrettyName $language)
+#if ($language != '')
+#set($languageLocale = $services.localization.toLocale($language))
+$escapetool.xml($stringtool.capitalize($languageLocale.getDisplayName($languageLocale)))##
+#else
+$services.localization.render('defaultlanguage')##
+#end
+#end
+##
+#**
+ * Display an element inside the drawer.
+ *
+ * @param $url the url of the link of the element
+ * @param $icon the name of the icon of the element (must be an icon of the glyphicon set, without the "glyphicon-" prefix)
+ * @param $text the text to display in the element
+ *#
+#macro(drawerItem $url $shortName $text)
+  <div style="float:right; text-shadow: 0 1px 1px rgba(0,0,0,0.5);" title="$text">
+    <a class="tme" href="$url">
+      <strong>$shortName</strong>
+    </a>
+  </div>
+#end
+#**
+ * Display the top element of a foldable drawer item.
+ *
+ * @param $icon the name of the icon of the element (must be an icon of the glyphicon set, without the "glyphicon-" prefix)
+ * @param $text the text to display in the element
+ * @param $id (optional) the HTML id of the element
+ *#
+#macro(drawerTopItemStart $text $id)
+<div class="actionmenu" id="${id}_menu" style="background-color: transparent;">
+  <div class="rightmenu"  style="top: 10px; margin-right: 5px;"> 
+#end
+#**
+ * Close an foldable drawer item
+ *#
+#macro(drawerTopItemStop)
+    <a class="tme" style="float: right; cursor: default !important; text-decoration: blink;">$services.localization.render('languages'):</a>
+  </div>
+</div>
+#end
